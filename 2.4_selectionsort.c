@@ -1,46 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-int LinearSearch(int Array[], int n, int key) {
+void generateRandomArray(int arr[], int n) {
 for (int i = 0; i < n; i++) {
-if (Array[i] == key) {
-return i;
+arr[i] = rand() % 100;
 }
 }
-return -1;
+void selectionsort(int*A, int n){
+int indexofmin ;
+for(int i = 0 ; i< n ; i++){
+indexofmin = i;
+for(int j = 0 ; j< n; j++){
+if(A[indexofmin]> A[j])
+indexofmin = j;
+}
+// swap index of index of min with i
+int temp = A[indexofmin];
+A[indexofmin] = A[i];
+A[i] = temp ;
+}
 }
 int main() {
-int n, key, result;
-clock_t start, stop;
-double time_taken;
-printf("Enter the size of the array: ");
-if (scanf("%d", &n) != 1 || n <= 0) {
-printf("Invalid input. Please enter a positive integer.\n");
+int n;
+printf("Enter the number of elements: ");
+scanf("%d", &n);
+int *arr = (int *)malloc(n * sizeof(int));
+if (arr == NULL) {
+printf("Memory allocation failed\n");
 return 1;
 }
-int *Array = (int *)malloc(n * sizeof(int));
-if (Array == NULL) {
-printf("Memory allocation failed.\n");
-return 1;
-}
-for (int i = 0; i < n; i++) {
-Array[i] = i + 1;
-}
-
-key = n;
 srand(time(NULL));
-start = clock();
+clock_t start = clock();
 for (int i = 0; i < 1000; i++) {
-result = LinearSearch(Array, n, key);
+generateRandomArray(arr, n);
+selectionsort(arr, n);
 }
-stop = clock();
-time_taken = ((double)(stop - start)) / CLOCKS_PER_SEC;
-if (result != -1) {
-printf("Element %d found at index %d.\n", key, result);
-} else {
-printf("Element %d not found.\n", key);
-}
-printf("Time taken for 1000 searches: %.6f seconds\n", time_taken);
-free(Array);
+clock_t end = clock();
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC / 1000.0;
+printf("Average time to sort %d elements using Selection Sort: %f seconds\n", n,
+time_taken);
+free(arr);
 return 0;
 }
