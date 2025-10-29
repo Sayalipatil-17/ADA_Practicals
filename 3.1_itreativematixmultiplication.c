@@ -1,46 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-int LinearSearch(int Array[], int n, int key) {
-for (int i = 0; i < n; i++) {
-if (Array[i] == key) {
-return i;
+void multiplyMatrices(int **A, int **B, int **C, int size) {
+for (int i = 0; i < size; i++) {
+for (int j = 0; j < size; j++) {
+C[i][j] = 0;
+for (int k = 0; k < size; k++) {
+C[i][j] += A[i][k] * B[k][j];
 }
 }
-return -1;
 }
-int main() {
-int n, key, result;
-clock_t start, stop;
-double time_taken;
-printf("Enter the size of the array: ");
-if (scanf("%d", &n) != 1 || n <= 0) {
-printf("Invalid input. Please enter a positive integer.\n");
-return 1;
 }
-int *Array = (int *)malloc(n * sizeof(int));
-if (Array == NULL) {
-printf("Memory allocation failed.\n");
-return 1;
+int **allocateMatrix(int size) {
+int **matrix = (int **)malloc(size * sizeof(int *));
+for (int i = 0; i < size; i++)
+matrix[i] = (int *)malloc(size * sizeof(int));
+return matrix;
 }
-for (int i = 0; i < n; i++) {
-Array[i] = i + 1;
+void initializeMatrix(int **matrix, int size) {
+for (int i = 0; i < size; i++)
+for (int j = 0; j < size; j++)
+matrix[i][j] = rand() % 10;
+}
+void freeMatrix(int **matrix, int size) {
+for (int i = 0; i < size; i++)
+free(matrix[i]);
+free(matrix);
 }
 
-key = n;
-srand(time(NULL));
-start = clock();
-for (int i = 0; i < 1000; i++) {
-result = LinearSearch(Array, n, key);
+int main() {
+int sizes[] = {100, 200, 300, 400, 500};
+int numSizes = sizeof(sizes) / sizeof(sizes[0]);
+printf("Matrix Size\tExecution Time (seconds)\n");
+for (int s = 0; s < numSizes; s++) {
+int size = sizes[s];
+int **A = allocateMatrix(size);
+int **B = allocateMatrix(size);
+int **C = allocateMatrix(size);
+initializeMatrix(A, size);
+initializeMatrix(B, size);
+clock_t start = clock();
+multiplyMatrices(A, B, C, size);
+clock_t end = clock();
+double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+printf("%d x %d\t\t%.4f\n", size, size, time_taken);
+freeMatrix(A, size);
+freeMatrix(B, size);
+freeMatrix(C, size);
 }
-stop = clock();
-time_taken = ((double)(stop - start)) / CLOCKS_PER_SEC;
-if (result != -1) {
-printf("Element %d found at index %d.\n", key, result);
-} else {
-printf("Element %d not found.\n", key);
-}
-printf("Time taken for 1000 searches: %.6f seconds\n", time_taken);
-free(Array);
 return 0;
 }
