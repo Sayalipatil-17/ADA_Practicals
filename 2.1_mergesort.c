@@ -1,45 +1,42 @@
+// mergesort with timing
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+void printArray(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+
 void merge(int arr[], int low, int mid, int high) {
     int i, j, k;
-    int n1 = mid - low + 1;
-    int n2 = high - mid;
+    int b[100];  // temporary array
 
-    int *L = (int *)malloc(n1 * sizeof(int));
-    int *R = (int *)malloc(n2 * sizeof(int));
-
-    for (i = 0; i < n1; i++)
-        L[i] = arr[low + i];
-
-    for (j = 0; j < n2; j++)
-        R[j] = arr[mid + 1 + j];
-
-    i = 0;
-    j = 0;
+    i = low;
+    j = mid + 1;
     k = low;
 
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j])
-            arr[k++] = L[i++];
+    while (i <= mid && j <= high) {
+        if (arr[i] < arr[j])
+            b[k++] = arr[i++];
         else
-            arr[k++] = R[j++];
+            b[k++] = arr[j++];
     }
 
-    while (i < n1)
-        arr[k++] = L[i++];
+    while (i <= mid)
+        b[k++] = arr[i++];
 
-    while (j < n2)
-        arr[k++] = R[j++];
+    while (j <= high)
+        b[k++] = arr[j++];
 
-    free(L);
-    free(R);
+    for (i = low; i <= high; i++)
+        arr[i] = b[i];
 }
 
 void mergeSort(int arr[], int low, int high) {
     if (low < high) {
-        int mid = low + (high - low) / 2;
+        int mid = (low + high) / 2;
 
         mergeSort(arr, low, mid);
         mergeSort(arr, mid + 1, high);
@@ -48,44 +45,28 @@ void mergeSort(int arr[], int low, int high) {
     }
 }
 
-void generateRandomArray(int arr[], int n) {
-    for (int i = 0; i < n; i++)
-        arr[i] = rand() % 100;
-}
-
 int main() {
-    int n;
-    printf("Enter the number of elements: ");
-    scanf("%d", &n);
+    int arr[] = {12, 11, 13, 5, 6, 7};
+    int n = sizeof(arr) / sizeof(arr[0]);
 
-    int *arr = (int *)malloc(n * sizeof(int));
-    int *temp = (int *)malloc(n * sizeof(int));
+    printf("Original array: ");
+    printArray(arr, n);
 
-    if (arr == NULL || temp == NULL) {
-        printf("Memory allocation failed\n");
-        return 1;
-    }
+    clock_t start, end;
+    double time_taken;
 
-    generateRandomArray(arr, n);
+    start = clock();
 
-    double total_time = 0;
+    mergeSort(arr, 0, n - 1);
 
-    for (int i = 0; i < 1000; i++) {
-        for (int j = 0; j < n; j++)
-            temp[j] = arr[j];
+    end = clock();
 
-        clock_t start = clock();
-        mergeSort(temp, 0, n - 1);
-        clock_t end = clock();
+    time_taken = (double)(end - start) / CLOCKS_PER_SEC;
 
-        total_time += ((double)(end - start)) / CLOCKS_PER_SEC;
-    }
+    printf("Sorted array:   ");
+    printArray(arr, n);
 
-    printf("Average time to sort array of size %d : %f seconds\n",
-           n, total_time / 1000.0);
-
-    free(arr);
-    free(temp);
+    printf("Time taken by merge sort: %f seconds\n", time_taken);
 
     return 0;
 }
