@@ -1,4 +1,4 @@
-// mergesort with timing
+// mergesort with random array + timing
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -9,9 +9,15 @@ void printArray(int arr[], int n) {
     printf("\n");
 }
 
+// generate random elements
+void generateRandomArray(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        arr[i] = rand() % 100;     // random numbers 0–99
+}
+
 void merge(int arr[], int low, int mid, int high) {
     int i, j, k;
-    int b[100];  // temporary array
+    int b[100];   // temporary array
 
     i = low;
     j = mid + 1;
@@ -46,27 +52,33 @@ void mergeSort(int arr[], int low, int high) {
 }
 
 int main() {
-    int arr[] = {12, 11, 13, 5, 6, 7};
-    int n = sizeof(arr) / sizeof(arr[0]);
+    int n;
+    printf("Enter size of array (max 100): ");
+    scanf("%d", &n);
 
-    printf("Original array: ");
+    if (n > 100) {
+        printf("Array too large! Max allowed: 100\n");
+        return 0;
+    }
+
+    int arr[100];
+
+    srand(time(NULL));   // seed random
+    generateRandomArray(arr, n);
+
+    printf("Random array: ");
     printArray(arr, n);
 
-    clock_t start, end;
-    double time_taken;
-
-    start = clock();
-
+    clock_t start = clock();
     mergeSort(arr, 0, n - 1);
+    clock_t end = clock();
 
-    end = clock();
+    double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
 
-    time_taken = (double)(end - start) / CLOCKS_PER_SEC;
-
-    printf("Sorted array:   ");
+    printf("Sorted array: ");
     printArray(arr, n);
 
-    printf("Time taken by merge sort: %f seconds\n", time_taken);
+    printf("Time taken by Merge Sort: %f seconds\n", time_taken);
 
     return 0;
 }
